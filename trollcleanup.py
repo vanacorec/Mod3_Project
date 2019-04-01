@@ -70,6 +70,26 @@ def hashtag_counter(series):
     return counter
 
 def clean_tweets_df(tweets_df, target_val):
+	""" Take in a DataFrame of tweets and a classification value and return it cleaned.
+
+	Parameters:
+		tweets_df (DataFrame): Pandas DataFrame where each row corresponds to a tweet.
+			Null values are removed. Engineered features are added. Non-english tweets
+			are dropped as are duplicate tweets. Classification column is added and
+			then tweet content is cleaned.
+		target_val (integer 0 or 1): Classification value where 1 corresponds to a 
+			tweet that has been labeled as a Troll and 0 corresponds to a normal 
+			tweet.
+
+	Returns:
+		tweets_df (DataFrame): Pandas DataFrame with data cleaned and ready for 
+			joining.
+	"""
+	if values:
+		tweets_df=tweets_df.drop(columns = ['posted','expanded_urls', 'source', 'retweeted_status_id', 'in_reply_to_status_id'],axis=1)
+	else:
+		tweets_df=tweets_df.drop(columns = ["Unnamed: 0", "tweet_id_str", "tweet_id", "user_id", "user_id_str"],axis=1)
+
     tweets_df = tweets_df.drop(tweets_df[tweets_df.tweet_id.isnull()].index)
     tweets_df = tweets_df.drop(tweets_df[tweets_df.text.isnull()].index)
     tweets_df = fix_tweet_id_str(tweets_df)    
@@ -83,28 +103,34 @@ def clean_tweets_df(tweets_df, target_val):
     
     return tweets_df
 
-
-
 def remove_dup_tweet_ids(df):
+	'''Print the size of a DataFrame and remove duplicate values by tweet id.'''
     print(len(df))
     df = df[~df.tweet_id_str.duplicated(keep='first')]
     print(len(df))
     return df
+
 def add_target_col(df, val):
+	'''Append column with classification label.'''
     df['target'] = val
     return df
 def remove_non_en(df):
+	'''Return only entries in English.'''
     df = df[df['lang'] == 'en']
     return df
 def add_date_time_col(df):
+	'''Append a column of the tweet time as a DateTime.'''
     df['date_time'] = pd.to_datetime(df['created_str'])
     return df
 def fix_tweet_id_str(df):
+	'''Return the index as the tweet_id as a str.'''
     return df.drop("tweet_id_str", axis = 1).rename(columns = {"Unnamed: 0" : "tweet_id_str"})
 def drop_null_tweet_ids(df):
+	'''Drop all entries with a null tweet_id.'''
     return df.drop(df[df.tweet_id.isnull()].index)
 
 def strip_tweets(tweet):
+	'''Process tweet text to remove retweets, mentions,links and hashtags.'''
     retweet = r'RT:? ?@\w+:?'
     tweet= re.sub(retweet,'',tweet)
     mention = r'@\w+'
@@ -117,10 +143,28 @@ def strip_tweets(tweet):
     tweet= re.sub(hashtag,'',tweet)
     return tweet
 def is_rt(string):
+	'''Determine whether the tweet is a retweet, returned as a 0 for no and 1 for yes.'''
     retweet = r'RT:? ?@\w+:?'
     if re.findall(retweet, string):
         return 1
     else:
         return 0
 
-    
+ def create_wordcloud(series):
+ 	""" Take in a list of lists and create a WordCloud visualization for those terms.
+
+ 	Parameters:
+ 		series (iterable): A list of lists containing strings.
+	Returns:
+		None: The ouput is a visualization of the strings in series in terms of the
+			frequency of their occurrence.
+
+ 	"""
+ 	import wordclouds
+ 	from PIL import Image
+
+    cloud=WordCloud().generate(' '.join([word for word in word_list for word_list in series))
+    plt.imshow(troll_hashtag_cloud,interpolation='bilinear')
+	plt.plot(figsize = (8,4))
+	plt.axis('off')
+	plt.show();

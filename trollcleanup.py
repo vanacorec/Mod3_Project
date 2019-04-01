@@ -1,5 +1,6 @@
 import pandas as pd 
 import numpy as np 
+import re
 
 def to_list(string,quotes):
 	""" Converts a string into a list of strings
@@ -27,14 +28,99 @@ def to_list_count(lst):
 	'''Count the elements of a list'''
     return len(lst)
 
+def add_counts(df):
+	""" Count the number of hashtags and mentions for each observation in a DataFrame.
+
+	Parameters:
+		df (DataFrame): Pandas DF where each observation is a tweet and which contains
+			columns with a list of hashtags and with a list of mentions
+
+	Returns:
+		df (DataFrame): Returns Pandas DF with 'hashtags' and 'mentions' column changed 
+			from a str to a list of str. Adds columns for the count of each of the str 
+			in those columns.
+	"""
+
+    df["hashtags"] = df["hashtags"].apply(to_list)
+    df["hashtags_count"] = df["hashtags"].apply(to_list_count)
+    
+    df["mentions"] = df["mentions"].apply(to_list)
+    df["mentions_count"] = df["mentions"].apply(to_list_count)
+    return df
+
 def hashtag_counter(series):
+	""" Return a count of each unique item in a list of lists.
+
+	Parameters:
+		series (list): List where each element is a list of strings.
+
+	Returns:
+		counter (Counter): Count of each unique string element in the series.
+	
+	"""
+
 	from collections import Counter
 
 	counter=Counter()
 	
+	# Loop through each row in the series and raise the count of each tag in the row
 	for row in series:
 	    for tag in row:
-	        counter[tag] +=1
+	        counter[tag.lower()] +=1
     return counter
+
+def clean_tweets_df(tweets_df, target_val):
+    tweets_df = tweets_df.drop(tweets_df[tweets_df.tweet_id.isnull()].index)
+    tweets_df = tweets_df.drop(tweets_df[tweets_df.text.isnull()].index)
+    tweets_df = fix_tweet_id_str(tweets_df)    
+    tweets_df = add_counts(tweets_df)
+    tweets_df = add_date_time_col(tweets_df)
+    tweets_df = remove_non_en(tweets_df)
+    tweets_df = remove_dup_tweet_ids(tweets_df)
+    tweets_df = add_target_col(tweets_df, target_val)
+    tweets_df["retweeted"] = tweets_df['text'].apply(is_rt)
+    tweets_df['text'] = tweets_df['text'].apply(strip_tweets)
+    
+    return tweets_df
+
+
+
+def remove_dup_tweet_ids(df):
+    print(len(df))
+    df = df[~df.tweet_id_str.duplicated(keep='first')]
+    print(len(df))
+    return df
+def add_target_col(df, val):
+    df['target'] = val
+    return df
+def remove_non_en(df):
+    df = df[df['lang'] == 'en']
+    return df
+def add_date_time_col(df):
+    df['date_time'] = pd.to_datetime(df['created_str'])
+    return df
+def fix_tweet_id_str(df):
+    return df.drop("tweet_id_str", axis = 1).rename(columns = {"Unnamed: 0" : "tweet_id_str"})
+def drop_null_tweet_ids(df):
+    return df.drop(df[df.tweet_id.isnull()].index)
+
+def strip_tweets(tweet):
+    retweet = r'RT:? ?@\w+:?'
+    tweet= re.sub(retweet,'',tweet)
+    mention = r'@\w+'
+    tweet= re.sub(mention,'',tweet)
+    links = r'^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$'
+    tweet= re.sub(links,'',tweet)
+    tweet_links = r'https:\/\/t\.co\/\w+|http:\/\/t\.co\/\w+'
+    tweet=re.sub(tweet_links,'',tweet)
+    hashtag = r'#\w+'
+    tweet= re.sub(hashtag,'',tweet)
+    return tweet
+def is_rt(string):
+    retweet = r'RT:? ?@\w+:?'
+    if re.findall(retweet, string):
+        return 1
+    else:
+        return 0
 
     

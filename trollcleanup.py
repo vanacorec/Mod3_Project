@@ -149,22 +149,3 @@ def is_rt(string):
         return 1
     else:
         return 0
-
- def create_wordcloud(series):
- 	""" Take in a list of lists and create a WordCloud visualization for those terms.
-
- 	Parameters:
- 		series (iterable): A list of lists containing strings.
-	Returns:
-		None: The ouput is a visualization of the strings in series in terms of the
-			frequency of their occurrence.
-
- 	"""
- 	import wordclouds
- 	from PIL import Image
-
-    cloud=WordCloud().generate(' '.join([word for word in word_list for word_list in series))
-    plt.imshow(troll_hashtag_cloud,interpolation='bilinear')
-	plt.plot(figsize = (8,4))
-	plt.axis('off')
-	plt.show();

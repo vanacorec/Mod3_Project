@@ -43,10 +43,10 @@ def add_counts(df):
 			in those columns.
 	"""
 	if type(df['hashtags'][0])==str:
-		df["hashtags"] = df["hashtags"].apply(to_list)
+		df["hashtags"] = df["hashtags"].apply(to_list,args=('"'))
 	df["hashtags_count"] = df["hashtags"].apply(to_list_count)
 	if type(df['mentions'][0])==str:
-		df["mentions"] = df["mentions"].apply(to_list)
+		df["mentions"] = df["mentions"].apply(to_list,args=('"'))
 	df["mentions_count"] = df["mentions"].apply(to_list_count)
 	return df
 
@@ -67,7 +67,16 @@ def hashtag_counter(series):
 			counter[tag.lower()] +=1
 	return counter
 
-def clean_tweets_df(tweets_df, target_val):
+def filter_lang(tweet_df,users_df):
+	"""
+	Pass in just user_df screen_name and lang
+	"""
+	users_df=users_df[['screen_name','lang']]
+	users_df.rename(columns={"screen_name" : "user_key"}, inplace = True)
+	merged_data = tweet_df.merge(users_df, on = "user_key", how = "left")
+	return merged_data
+
+def clean_tweets_df(tweets_df, target_val, *users):
 	""" Take in a DataFrame of tweets and a classification value and return it cleaned.
 
 	Parameters:
@@ -83,28 +92,36 @@ def clean_tweets_df(tweets_df, target_val):
 		tweets_df (DataFrame): Pandas DataFrame with data cleaned and ready for 
 			joining.
 	"""
-	if target_val:
-		tweets_df=tweets_df.drop(columns = ['posted','expanded_urls', 'source', 'retweeted_status_id', 'in_reply_to_status_id'],axis=1)
-	else:
-		tweets_df=tweets_df.drop(columns = ["tweet_id_str", "tweet_id", "user_id", "user_id_str"],axis=1)
-
+	print("Original: "+ str(len(tweets_df)))
 	tweets_df = tweets_df.drop(tweets_df[tweets_df.tweet_id.isnull()].index)
+	print("Drop null ids: "+ str(len(tweets_df)))
 	tweets_df = tweets_df.drop(tweets_df[tweets_df.text.isnull()].index)
+	print("Drop null tweets: "+ str(len(tweets_df)))
 	# tweets_df = fix_tweet_id_str(tweets_df)    
+	tweets_df = remove_dup_tweet_ids(tweets_df)
+	print("Drop dup tweet ids: "+ str(len(tweets_df)))
 	tweets_df = add_counts(tweets_df)
 	tweets_df = add_date_time_col(tweets_df)
+	if target_val:
+		tweets_df = filter_lang(tweets_df,users[0])
+	print("All languages: "+ str(len(tweets_df)))
 	tweets_df = remove_non_en(tweets_df)
-	tweets_df = remove_dup_tweet_ids(tweets_df)
+	print("Just English: "+ str(len(tweets_df)))
 	tweets_df = add_target_col(tweets_df, target_val)
 	tweets_df["retweeted"] = tweets_df['text'].apply(is_rt)
 	tweets_df['text'] = tweets_df['text'].apply(strip_tweets)
+	if target_val:
+		tweets_df=tweets_df.drop(columns = ['posted','expanded_urls', 'source', 'retweeted_status_id', 'in_reply_to_status_id'],axis=1)
+		
+	else:
+		tweets_df=tweets_df.drop(columns = ["tweet_id_str", "tweet_id", "user_id"],axis=1)
 
 	return tweets_df
 
 def remove_dup_tweet_ids(df):
 	'''Print the size of a DataFrame and remove duplicate values by tweet id.'''
 	print(len(df))
-	df = df[~df.tweet_id_str.duplicated(keep='first')]
+	df = df[~df.tweet_id.duplicated(keep='first')]
 	print(len(df))
 	return df
 
@@ -136,7 +153,9 @@ def strip_tweets(tweet):
 	links = r'^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$'
 	tweet= re.sub(links,'',tweet)
 	tweet_links = r'https:\/\/t\.co\/\w+|http:\/\/t\.co\/\w+'
-	tweet=re.sub(tweet_links,'',tweet)
+	tweet=re.sub(tweet_links,'',tweet)	
+	tweet_link = r'http\S+'
+	tweet=re.sub(tweet_link,'',tweet)
 	hashtag = r'#\w+'
 	tweet= re.sub(hashtag,'',tweet)
 	return tweet

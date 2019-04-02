@@ -16,7 +16,7 @@ def process_tweet(tweet):
 	stopwords_removed = [token.lower() for token in tokens if token not in stopwords_list]
 	return stopwords_removed
 
-def tokenize(tweet):
+def tokenize(series):
 	corpus = ' '.join([tweet.lower() for tweet in series])
 	tokens = process_tweet(corpus)
 	return tokens

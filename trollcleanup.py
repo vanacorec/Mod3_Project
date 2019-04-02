@@ -1,6 +1,8 @@
 import pandas as pd 
 import numpy as np 
 import re
+from collections import Counter
+
 
 def to_list(string,quotes):
 	""" Converts a string into a list of strings
@@ -40,11 +42,11 @@ def add_counts(df):
 			from a str to a list of str. Adds columns for the count of each of the str 
 			in those columns.
 	"""
-
-	df["hashtags"] = df["hashtags"].apply(to_list)
+	if type(df['hashtags'][0])==str:
+		df["hashtags"] = df["hashtags"].apply(to_list)
 	df["hashtags_count"] = df["hashtags"].apply(to_list_count)
-    
-	df["mentions"] = df["mentions"].apply(to_list)
+    if type(df['mentions'][0])==str:
+		df["mentions"] = df["mentions"].apply(to_list)
 	df["mentions_count"] = df["mentions"].apply(to_list_count)
 	return df
 
@@ -56,11 +58,7 @@ def hashtag_counter(series):
 
 	Returns:
 		counter (Counter): Count of each unique string element in the series.
-	
 	"""
-
-	from collections import Counter
-
 	counter=Counter()
 	
 	# Loop through each row in the series and raise the count of each tag in the row
@@ -85,14 +83,14 @@ def clean_tweets_df(tweets_df, target_val):
 		tweets_df (DataFrame): Pandas DataFrame with data cleaned and ready for 
 			joining.
 	"""
-	if values:
+	if target_val:
 		tweets_df=tweets_df.drop(columns = ['posted','expanded_urls', 'source', 'retweeted_status_id', 'in_reply_to_status_id'],axis=1)
 	else:
-		tweets_df=tweets_df.drop(columns = ["Unnamed: 0", "tweet_id_str", "tweet_id", "user_id", "user_id_str"],axis=1)
+		tweets_df=tweets_df.drop(columns = ["tweet_id_str", "tweet_id", "user_id", "user_id_str"],axis=1)
 
 	tweets_df = tweets_df.drop(tweets_df[tweets_df.tweet_id.isnull()].index)
 	tweets_df = tweets_df.drop(tweets_df[tweets_df.text.isnull()].index)
-	tweets_df = fix_tweet_id_str(tweets_df)    
+	# tweets_df = fix_tweet_id_str(tweets_df)    
 	tweets_df = add_counts(tweets_df)
 	tweets_df = add_date_time_col(tweets_df)
 	tweets_df = remove_non_en(tweets_df)

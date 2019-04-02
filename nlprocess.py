@@ -7,6 +7,8 @@ from nltk.stem import WordNetLemmatizer
 import string
 from wordcloud import WordCloud
 from PIL import Image
+import matplotlib.pyplot as plt
+nltk.download('punkt')
 	
 stopwords_list=stopwords.words('english') +list(string.punctuation)
 stopwords_list += ["'",'"','...','``','…','’','‘','“',"''",'""','”','”',"'s'",'\'s','n\'t','\'m','\'re','amp','https']
@@ -17,7 +19,7 @@ def process_tweet(tweet):
 	return stopwords_removed
 
 def tokenize(series):
-	corpus = ' '.join([tweet.lower() for tweet in series])
+	corpus = ' '.join([tweet.lower() if type(tweet)==str else ' '.join([tag.lower() for tag in tweet]) for tweet in series])
 	tokens = process_tweet(corpus)
 	return tokens
 
@@ -42,9 +44,12 @@ def create_wordcloud(series, *top):
 			frequency of their occurrence.
 
 	"""
-	if top[0]:
-		series=wordfrequency(series,top[0])
-	cloud=WordCloud().generate(' '.join([word for word in word_list for word_list in series]))
+	# if top[0]:
+	# 	series=wordfrequency(series,top[0])
+	vocab = tokenize(series)
+	if not top[0]:
+		top[0]=200
+	cloud=WordCloud(max_words=top[0]).generate(' '.join([word for word in vocab]))
 	plt.imshow(cloud,interpolation='bilinear')
 	plt.plot(figsize = (8,4))
 	plt.axis('off')

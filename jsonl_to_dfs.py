@@ -5,16 +5,17 @@ import pandas as pd
 
 
 def get_all_df(jsonl_files_list):
-  '''
-  Takes in a list of one or more jsonl files
-  Gets a tweets and users dataframe for each jsonl file and combines them 
-  Writes the dataframes to csv files
-  Returns tweets data frame and users dataframe 
-  '''
+  """ Gets a tweets and users dataframe for data in all jsonl files and writes them to csv files
+  Parameters:
+    json1_files_list (iterable): list of one or more jsonl files
+  Returns:
+    all_tweets_df: dataframe of all tweets data
+    all_users_df: dataframe of all users data 
+  """
   all_tweets_df_list = []
   all_users_df_list = []
-  for json_file in jsonl_files_list:
-    tweets_df, users_df = get_user_tweet_dfs
+  for jsonl_file in jsonl_files_list:
+    tweets_df, users_df = get_user_tweet_dfs(jsonl_file)
     all_tweets_df_list.append(tweets_df)
     all_users_df_list.append(users_df)
   all_tweets_df = pd.concat(all_tweets_df_list)
@@ -44,10 +45,10 @@ def get_user_tweet_dfs(jsonl_file):
     for line in f:
       
       temp=json.loads(line)
-      tweet,user=clean_json(temp)
+      tweet,user=parse_json(temp)
       
-      tweet_dfs.append(pd.DataFrame(tweet,index=[tweet['tweet_id']]))
-      user_dfs.append(pd.DataFrame(user,index=[user['id']]))
+      tweet_dfs.append(pd.DataFrame(tweet,index=[tweet['tweet_id_str']]))
+      user_dfs.append(pd.DataFrame(user,index=[user['user_id_str']]))
         
   tweets_df = pd.concat(tweet_dfs)
   users_df = pd.concat(user_dfs)
@@ -55,7 +56,7 @@ def get_user_tweet_dfs(jsonl_file):
   return tweets_df, users_df
 
 
-def clean_json(tweet):
+def parse_json(tweet):
   '''
   Takes in a line from the jsonl file
   Parses the line into two dictionaries:

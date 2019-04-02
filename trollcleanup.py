@@ -18,15 +18,15 @@ def to_list(string,quotes):
 	else:
 		pattern = r"\'(.*?)\'"
     # Checks for null values, returns empty list
-    if type(string) != str:
-        return []
+	if type(string) != str:
+		return []
     # Finds all strings within the brackets, returned as a list
-    items = re.findall(pattern, string)
-    return items
+	items = re.findall(pattern, string)
+	return items
 
 def to_list_count(lst):
 	'''Count the elements of a list'''
-    return len(lst)
+	return len(lst)
 
 def add_counts(df):
 	""" Count the number of hashtags and mentions for each observation in a DataFrame.
@@ -41,12 +41,12 @@ def add_counts(df):
 			in those columns.
 	"""
 
-    df["hashtags"] = df["hashtags"].apply(to_list)
-    df["hashtags_count"] = df["hashtags"].apply(to_list_count)
+	df["hashtags"] = df["hashtags"].apply(to_list)
+	df["hashtags_count"] = df["hashtags"].apply(to_list_count)
     
-    df["mentions"] = df["mentions"].apply(to_list)
-    df["mentions_count"] = df["mentions"].apply(to_list_count)
-    return df
+	df["mentions"] = df["mentions"].apply(to_list)
+	df["mentions_count"] = df["mentions"].apply(to_list_count)
+	return df
 
 def hashtag_counter(series):
 	""" Return a count of each unique item in a list of lists.
@@ -66,8 +66,8 @@ def hashtag_counter(series):
 	# Loop through each row in the series and raise the count of each tag in the row
 	for row in series:
 	    for tag in row:
-	        counter[tag.lower()] +=1
-    return counter
+        	counter[tag.lower()] +=1
+	return counter
 
 def clean_tweets_df(tweets_df, target_val):
 	""" Take in a DataFrame of tweets and a classification value and return it cleaned.
@@ -90,62 +90,86 @@ def clean_tweets_df(tweets_df, target_val):
 	else:
 		tweets_df=tweets_df.drop(columns = ["Unnamed: 0", "tweet_id_str", "tweet_id", "user_id", "user_id_str"],axis=1)
 
-    tweets_df = tweets_df.drop(tweets_df[tweets_df.tweet_id.isnull()].index)
-    tweets_df = tweets_df.drop(tweets_df[tweets_df.text.isnull()].index)
-    tweets_df = fix_tweet_id_str(tweets_df)    
-    tweets_df = add_counts(tweets_df)
-    tweets_df = add_date_time_col(tweets_df)
-    tweets_df = remove_non_en(tweets_df)
-    tweets_df = remove_dup_tweet_ids(tweets_df)
-    tweets_df = add_target_col(tweets_df, target_val)
-    tweets_df["retweeted"] = tweets_df['text'].apply(is_rt)
-    tweets_df['text'] = tweets_df['text'].apply(strip_tweets)
-    
-    return tweets_df
+	tweets_df = tweets_df.drop(tweets_df[tweets_df.tweet_id.isnull()].index)
+	tweets_df = tweets_df.drop(tweets_df[tweets_df.text.isnull()].index)
+	tweets_df = fix_tweet_id_str(tweets_df)    
+	tweets_df = add_counts(tweets_df)
+	tweets_df = add_date_time_col(tweets_df)
+	tweets_df = remove_non_en(tweets_df)
+	tweets_df = remove_dup_tweet_ids(tweets_df)
+	tweets_df = add_target_col(tweets_df, target_val)
+	tweets_df["retweeted"] = tweets_df['text'].apply(is_rt)
+	tweets_df['text'] = tweets_df['text'].apply(strip_tweets)
+
+	return tweets_df
 
 def remove_dup_tweet_ids(df):
 	'''Print the size of a DataFrame and remove duplicate values by tweet id.'''
-    print(len(df))
-    df = df[~df.tweet_id_str.duplicated(keep='first')]
-    print(len(df))
-    return df
+	print(len(df))
+	df = df[~df.tweet_id_str.duplicated(keep='first')]
+	print(len(df))
+	return df
 
 def add_target_col(df, val):
 	'''Append column with classification label.'''
-    df['target'] = val
-    return df
+	df['target'] = val
+	return df
 def remove_non_en(df):
 	'''Return only entries in English.'''
-    df = df[df['lang'] == 'en']
-    return df
+	df = df[df['lang'] == 'en']
+	return df
 def add_date_time_col(df):
 	'''Append a column of the tweet time as a DateTime.'''
-    df['date_time'] = pd.to_datetime(df['created_str'])
-    return df
+	df['date_time'] = pd.to_datetime(df['created_str'])
+	return df
 def fix_tweet_id_str(df):
 	'''Return the index as the tweet_id as a str.'''
-    return df.drop("tweet_id_str", axis = 1).rename(columns = {"Unnamed: 0" : "tweet_id_str"})
+	return df.drop("tweet_id_str", axis = 1).rename(columns = {"Unnamed: 0" : "tweet_id_str"})
 def drop_null_tweet_ids(df):
 	'''Drop all entries with a null tweet_id.'''
-    return df.drop(df[df.tweet_id.isnull()].index)
+	return df.drop(df[df.tweet_id.isnull()].index)
 
 def strip_tweets(tweet):
 	'''Process tweet text to remove retweets, mentions,links and hashtags.'''
-    retweet = r'RT:? ?@\w+:?'
-    tweet= re.sub(retweet,'',tweet)
-    mention = r'@\w+'
-    tweet= re.sub(mention,'',tweet)
-    links = r'^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$'
-    tweet= re.sub(links,'',tweet)
-    tweet_links = r'https:\/\/t\.co\/\w+|http:\/\/t\.co\/\w+'
-    tweet=re.sub(tweet_links,'',tweet)
-    hashtag = r'#\w+'
-    tweet= re.sub(hashtag,'',tweet)
-    return tweet
+	retweet = r'RT:? ?@\w+:?'
+	tweet= re.sub(retweet,'',tweet)
+	mention = r'@\w+'
+	tweet= re.sub(mention,'',tweet)
+	links = r'^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$'
+	tweet= re.sub(links,'',tweet)
+	tweet_links = r'https:\/\/t\.co\/\w+|http:\/\/t\.co\/\w+'
+	tweet=re.sub(tweet_links,'',tweet)
+	hashtag = r'#\w+'
+	tweet= re.sub(hashtag,'',tweet)
+	return tweet
 def is_rt(string):
 	'''Determine whether the tweet is a retweet, returned as a 0 for no and 1 for yes.'''
-    retweet = r'RT:? ?@\w+:?'
-    if re.findall(retweet, string):
-        return 1
-    else:
-        return 0
+	retweet = r'RT:? ?@\w+:?'
+	if re.findall(retweet, string):
+	    return 1
+	else:
+	    return 0
+
+def filter_time(df1,df2):
+	""" Filter two dataframes so that their contents are within the same time period.
+
+	Parameters:
+		df1,df2 (DataFrames): Data containing a column labeled 'date_time' where the  
+			content of one is completely contained in the timeframe covered by the
+			other's.
+	Returns:
+		DataFrames: The filtered contents of the input DataFrames.
+	"""
+
+	# Check to see which DataFrame has the wider scope
+	if df2.date_time.max()>df1.date_time.max():
+		min_time = df1.date_time.min()
+		max_time = df1.date_time.max()
+		# Filter the contents by time window
+		df2=df2[(df2['date_time']>=min_time) & (df2['date_time']<=max_time)]
+	else:
+		min_time = df2.date_time.min()
+		max_time = df2.date_time.max()
+
+		df1=df1[(df1['date_time']>=min_time) & (df1['date_time']<=max_time)]
+	return df1,df2

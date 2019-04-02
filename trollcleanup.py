@@ -110,6 +110,8 @@ def clean_tweets_df(tweets_df, target_val, *users):
 	tweets_df = add_target_col(tweets_df, target_val)
 	tweets_df["retweeted"] = tweets_df['text'].apply(is_rt)
 	tweets_df['text'] = tweets_df['text'].apply(strip_tweets)
+	# mostly null values in the troll DB
+	tweets_df.drop(['retweet_count','favorite_count'])
 	if target_val:
 		tweets_df=tweets_df.drop(columns = ['posted','expanded_urls', 'source', 'retweeted_status_id', 'in_reply_to_status_id'],axis=1)
 		

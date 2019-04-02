@@ -16,13 +16,13 @@ def to_list(string,quotes):
 	"""
 	# Find strings within given quotes
 	if quotes == '"':
-	    pattern = r"\"(.*?)\""
+		pattern = r"\"(.*?)\""
 	else:
 		pattern = r"\'(.*?)\'"
-    # Checks for null values, returns empty list
+	# Checks for null values, returns empty list
 	if type(string) != str:
 		return []
-    # Finds all strings within the brackets, returned as a list
+	# Finds all strings within the brackets, returned as a list
 	items = re.findall(pattern, string)
 	return items
 
@@ -45,7 +45,7 @@ def add_counts(df):
 	if type(df['hashtags'][0])==str:
 		df["hashtags"] = df["hashtags"].apply(to_list)
 	df["hashtags_count"] = df["hashtags"].apply(to_list_count)
-    if type(df['mentions'][0])==str:
+	if type(df['mentions'][0])==str:
 		df["mentions"] = df["mentions"].apply(to_list)
 	df["mentions_count"] = df["mentions"].apply(to_list_count)
 	return df
@@ -63,8 +63,8 @@ def hashtag_counter(series):
 	
 	# Loop through each row in the series and raise the count of each tag in the row
 	for row in series:
-	    for tag in row:
-        	counter[tag.lower()] +=1
+		for tag in row:
+			counter[tag.lower()] +=1
 	return counter
 
 def clean_tweets_df(tweets_df, target_val):
@@ -144,9 +144,9 @@ def is_rt(string):
 	'''Determine whether the tweet is a retweet, returned as a 0 for no and 1 for yes.'''
 	retweet = r'RT:? ?@\w+:?'
 	if re.findall(retweet, string):
-	    return 1
+		return 1
 	else:
-	    return 0
+		return 0
 
 def filter_time(df1,df2):
 	""" Filter two dataframes so that their contents are within the same time period.

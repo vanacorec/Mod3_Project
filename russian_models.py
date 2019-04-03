@@ -1,16 +1,29 @@
+import numpy as np
+from sklearn.metrics import confusion_matrix
+import plot
+from sklearn.linear_model import SGDClassifier,LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc, accuracy_score
 
 
+def strut_models(classifiers,data_split,output=False):
+    for classifier in classifiers:
+        model = classifier.fit(data_split[0],data_split[2])
+        prediction = classifier.predict(data_split[1])
+        print(classifier)
+        print(classification_report(data_split[3],prediction))
+        print('\n')
+        plot.plot_confusion_matrix(confusion_matrix(data_split[3],prediction))
+    if output:
+        prob = model.predict_proba(data_split[1])
+        return model, prob
 
-
-
-def predict(function,nt_pred,tf_pred,tfidf_pred,y_test,weight=1):
-    tf_votes = function(nt_pred*weight,tf_pred)
+def predict(function,nt_pred,tfidf_pred,y_test,weight=1):
     tfidf_votes = function(nt_pred*weight,tfidf_pred)
-    print('TF Values:')
-    plot_confusion_matrix(confusion_matrix(y_test,tf_votes))
     
-    print('TFIDF Values:')
-    plot_confusion_matrix(confusion_matrix(y_test,tfidf_votes))
+    print('Combined Votes:')
+    plot.plot_confusion_matrix(confusion_matrix(y_test,tfidf_votes))
     
 def pred_geometric(non_text,text):
     votes = []

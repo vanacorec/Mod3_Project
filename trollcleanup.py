@@ -113,10 +113,10 @@ def clean_tweets_df(tweets_df, target_val, *users):
 	# mostly null values in the troll DB
 	tweets_df=tweets_df.drop(columns=['retweet_count','favorite_count'],axis=1)
 	if target_val:
-		tweets_df=tweets_df.drop(columns = ["created_at",'posted','expanded_urls', 'source', 'retweeted_status_id', 'in_reply_to_status_id','tweet_id','user_id','user_key'],axis=1)
+		tweets_df=tweets_df.drop(columns = ["created_str",'posted','expanded_urls', 'source', 'retweeted_status_id', 'in_reply_to_status_id','tweet_id','user_id','user_key'],axis=1)
 		
 	else:
-		tweets_df=tweets_df.drop(columns = ["tweet_id_str", "tweet_id", "user_id"],axis=1)
+		tweets_df=tweets_df.drop(columns = ["created_str","tweet_id_str", "tweet_id", "user_id"],axis=1)
 
 	return tweets_df
 

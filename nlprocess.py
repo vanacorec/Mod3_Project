@@ -1,12 +1,14 @@
 import re
 import nltk
 from nltk import word_tokenize, FreqDist
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
+from sklearn.model_selection import train_test_split
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import string
 from wordcloud import WordCloud
 from PIL import Image
+from imblearn.under_sampling import RandomUnderSampler
 import matplotlib.pyplot as plt
 nltk.download('punkt')
 	
@@ -18,7 +20,7 @@ def process_tweet(tweet):
 	stopwords_removed = [token.lower() for token in tokens if token not in stopwords_list]
 	return stopwords_removed
 
-def tokenize(series):
+def tokenized(series):
 	corpus = ' '.join([tweet.lower() if type(tweet)==str else ' '.join([tag.lower() for tag in tweet]) for tweet in series])
 	tokens = process_tweet(corpus)
 	return tokens
@@ -31,7 +33,7 @@ def wordfrequency(series, top):
 	Returns:
 		list (tuples): List of word and value pairs for the top words in the series.
 	"""
-	frequencies = FreqDist(tokenize(series))
+	frequencies = FreqDist(tokenized(series))
 	return frequencies.most_common(top)
 
 def create_wordcloud(series, *top):
@@ -46,7 +48,7 @@ def create_wordcloud(series, *top):
 	"""
 	# if top[0]:
 	# 	series=wordfrequency(series,top[0])
-	vocab = tokenize(series)
+	vocab = tokenized(series)
 	if not top[0]:
 		top[0]=200
 	cloud=WordCloud(max_words=top[0]).generate(' '.join([word for word in vocab]))
@@ -54,3 +56,19 @@ def create_wordcloud(series, *top):
 	plt.plot(figsize = (8,4))
 	plt.axis('off')
 	plt.show();
+
+def text_process(df,target,IDF):
+	cv = CountVectorizer(stop_words=stopwords_list)
+	tfidf = TfidfTransformer(use_idf=IDF)
+
+	cv.fit(text)
+	dummy_vocab=cv.transform(text)
+	tfidf.fit(dummy_vocab)
+	return tfidf
+
+def data_sampler(features,target, size=.75):
+	X_train,X_test,y_train,y_test=train_test_split(features,target,train_size=size,random_state=19,stratify=target)
+	rus = RandomUnderSampler(random_state=19)
+	X_rus,y_rus = rus.fit_sample(X_train,y_train)
+
+	return X_rus, X_test, y_rus, y_test

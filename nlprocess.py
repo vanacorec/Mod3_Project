@@ -57,14 +57,14 @@ def create_wordcloud(series, *top):
 	plt.axis('off')
 	plt.show();
 
-def text_process(df,target,IDF):
+def text_process(text,IDF):
 	cv = CountVectorizer(stop_words=stopwords_list)
 	tfidf = TfidfTransformer(use_idf=IDF)
 
-	cv.fit(text)
-	dummy_vocab=cv.transform(text)
+	cv.fit(text.text)
+	dummy_vocab=cv.transform(text.text)
 	tfidf.fit(dummy_vocab)
-	return tfidf
+	return cv,tfidf
 
 def data_sampler(features,target, size=.75):
 	X_train,X_test,y_train,y_test=train_test_split(features,target,train_size=size,random_state=19,stratify=target)

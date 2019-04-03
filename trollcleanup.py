@@ -111,9 +111,9 @@ def clean_tweets_df(tweets_df, target_val, *users):
 	tweets_df["retweeted"] = tweets_df['text'].apply(is_rt)
 	tweets_df['text'] = tweets_df['text'].apply(strip_tweets)
 	# mostly null values in the troll DB
-	tweets_df.drop(['retweet_count','favorite_count'])
+	tweets_df=tweets_df.drop(columns=['retweet_count','favorite_count'],axis=1)
 	if target_val:
-		tweets_df=tweets_df.drop(columns = ['posted','expanded_urls', 'source', 'retweeted_status_id', 'in_reply_to_status_id'],axis=1)
+		tweets_df=tweets_df.drop(columns = ["created_at",'posted','expanded_urls', 'source', 'retweeted_status_id', 'in_reply_to_status_id','tweet_id','user_id','user_key'],axis=1)
 		
 	else:
 		tweets_df=tweets_df.drop(columns = ["tweet_id_str", "tweet_id", "user_id"],axis=1)
@@ -191,4 +191,6 @@ def filter_time(df1,df2):
 		max_time = df2.date_time.max()
 
 		df1=df1[(df1['date_time']>=min_time) & (df1['date_time']<=max_time)]
+	df1.drop(columns=['date_time'],axis=1,inplace=True)
+	df2.drop(columns=['date_time'],axis=1,inplace=True)
 	return df1,df2

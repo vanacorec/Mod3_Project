@@ -15,6 +15,7 @@ def strut_models(classifiers,data_split,output=False):
         data_split (list): list of outputs from train_test_split [X_train, X_test, y_train, y_test]
 
     Returns:
+        Prints the classification report and confusion matrix for each model.
         if the output parameter is True:
             model (model): fitted input model if output is true
             prob (np.array): array of two columns, each col is probabilities of predictions for a class
@@ -33,7 +34,7 @@ def strut_models(classifiers,data_split,output=False):
         return model, prob
 
 def predict(function,nt_pred,tfidf_pred,y_test,weight=1):
-    """ Takes in arrays probabailites of class predictions for 2 different models, combines them based on 
+    """ Takes in arrays of probabilites of class predictions for 2 different models, combines them based on 
     the input function, and prints out the classification report and plots the confusion matrix
 
     Parameters:
@@ -41,7 +42,8 @@ def predict(function,nt_pred,tfidf_pred,y_test,weight=1):
         nt_pred (np.array): probabilities of prediction for each class from one model (non-text)
         tfidf_pred (np.array):  probabilities of prediction for each class from another model (text)
         y_test (series): class label values for test data
-        weight (int) (optional): number by which to multiply nt_pred values to weight them more or less
+        weight (int) (optional): number by which to multiply nt_pred values to weight them more or less,
+            Default 1
     Returns:
         None
     """
@@ -56,13 +58,13 @@ def predict(function,nt_pred,tfidf_pred,y_test,weight=1):
 For the following functions (pred_* ):
     Parameters: 
         non_text (np.array): 2 column array, first and second columns are predicted probabilities of the corresponding row being a nontroll 
-        and troll, respectively. Array is output of model.predict_proba(y_test), where model is fit with non text data
+            and troll, respectively. Array is output of model.predict_proba(y_test), where model is fit with non text data
         text (np.array): 2 column array, first and second columns are predicted probabilities of the corresponding row being a nontroll 
-        and troll, respectively. Array is output of model.predict_proba(y_test), where model is fit with text data
+            and troll, respectively. Array is output of model.predict_proba(y_test), where model is fit with text data
 
 
     Returns:
-        votes: 1 column array with final predictions of nontroll (0) or troll (1) for each row
+        votes (np.array): 1 column array with final predictions of nontroll (0) or troll (1) for each row
 """
 
     

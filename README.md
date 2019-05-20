@@ -5,10 +5,10 @@ The objective of this project is to detect whether a tweet was sent from an acco
 https://docs.google.com/presentation/d/130uUKQWzOtLQHsPs3jaOCtVE6W7ONptiFkORpMLqe3M/edit?usp=sharing
 
 ## Data Sources:
-* Non-Troll Tweets
+* Non-Troll Tweets  
 https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/PDI7IN
 These tweets were stored in a collection and rehydrated into jsonl files using Twarc. The chosen collection has several million tweets. For the scope of our project we chose to sample every 400th tweet from the collection based on our resources and time constraints. The ids for the samples we chose to rehydrate are located in the non-troll-tweets folder as txt files. 
-* Troll Tweets
+* Troll Tweets  
 https://www.kaggle.com/vikasg/russian-troll-tweets/
 Identified in the dataset reconstructed by NBC News.
 

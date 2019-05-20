@@ -18,23 +18,23 @@ The process of cleaning, analyzing and creating the models based on this corpus 
 ## Results
 #### Comparability of Datasets
 Exploratory data analysis verified that the tweets from both sources were comparable. The most common words in each set revealed overlap between the words but not necessarily the frequency or prominence of each word. These results are visualized in the following word clouds:
-* Troll Tweets
+* Troll Tweets  
 ![Word cloud of prominent words in Troll Tweets including: trump, people, one, hillary, obama](Images/TrollWordCloud.png)
-* Non-Troll Tweets
+* Non-Troll Tweets  
 ![Word cloud of prominent words in Non-Troll Tweets including: donald trump, hillary clinton, clinton foundation, trump supporter](Images/NonTrollWordCloud.png)
 
 A simple count was done for the prevalence of hashtags in each set. The similarity of the hashtags can be seen below as well as the disparity in count between each set.
-* Non-Troll Tweets
+* Non-Troll Tweets  
 ![List and count of top hashtags in Troll Tweets including: trump, maga, election2016, hillary, debatenight](Images/NonTrollHashtags.png)
-* Troll Tweets
+* Troll Tweets  
 ![List and count of top hashtags in Troll Tweets including: maga, trump, tcot, neverhillary, pjnet](Images/TrollHashtags.png)
 
 #### Final Model
 TO-DO: Go through specifics of model selection and parameter choosing including undersampling
 
-* Confusion Matrix
+* Confusion Matrix  
 ![Confusion Matrix with values on the diagonal of .92 for the Non-Troll class and .71 for the Troll class](Images/ConfusionMatrix.png)
-* ROC Curve
+* ROC Curve  
 ![ROC Curve generally hugging the top left corner](Images/ROCCurve.png)
 
 ## Conclusions

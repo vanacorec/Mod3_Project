@@ -14,7 +14,7 @@ def plot_confusion_matrix(cm, classes=['NonTroll','Troll'],
     Parameters: 
         cm (confusion matrix): output of sklearn.metrics.confusion_matrix function
         classes (list) (optional): list of classes, default is NonTroll and Troll 
-        normalize (boolean) (optional): normalize labels if true
+        normalize (boolean) (optional): normalize labels if true, default True
         title (string): title of the plot, default "Confusion Matrix"
         cmap (matplotlib colormap) (optional): default is plt.cm.Blues
 
@@ -61,7 +61,7 @@ def get_auc_score(y_test, y_score):
         y_score (np.array): array of probabiliites of prediction for one of the classes 
 
     Return:
-        auc_score (int): area under the ROC curve
+        auc_score (float): area under the ROC curve
     """
     fpr, tpr, thresholds = roc_curve(y_test,y_score)
     return auc(fpr,tpr)

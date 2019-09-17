@@ -1,5 +1,8 @@
 # Troll Tweet Classification
 
+## Collaborators
+@danjizquierdo https://github.com/danjizquierdo/
+
 ## Objective
 The objective of this project is to detect whether a tweet was sent from an account tied to Russia's Internet Research Agency based purely on its text content. The scope of the project is looking at tweets specifically sent during the highest activity of these accounts discovered by the House Intelligence Committee investigation. These messages were compared against tweets during the same period related to the 2016 Presidential election. Samples were taken from the 'Candidates and key election hashtags' collection and their content was compared to that from the Kaggle set in order to verify that their topics were similar to justify comparison. The time frame was narrowed to those in common between the two sets.
 https://docs.google.com/presentation/d/130uUKQWzOtLQHsPs3jaOCtVE6W7ONptiFkORpMLqe3M/edit?usp=sharing
